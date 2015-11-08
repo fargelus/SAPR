@@ -1,102 +1,78 @@
 __author__ = 'dima'
 
 from tkinter import *
-from mainwindow import AbstractWindow, FONT, COLOR
 
 
-class Preprocessorbutton(Button):
-    def __init__(self, parent=None, **options):
-        Button.__init__(self, parent, options)
-        self.config(text='Препроцессор', font=FONT)
-        self.bind('<Button-1>', lambda event: self.on_btn_click())
-
-    def on_btn_click(self):
-        win = Toplevel()
-        child = Preprocessorwin(win)
-        child.mainloop()
-
-
-class Preprocessorwin(AbstractWindow):
+class PreprocessorWin(Frame):
     def __init__(self, parent=None):
-        AbstractWindow.__init__(self, parent, color=COLOR)
+        Frame.__init__(self, parent, width=800, height=600)
         self.pack()
         self.master.title('Окно препроцессора')
+
         self.make_widgets()
 
     def make_widgets(self):
-        fr = Frame(self, width=180, height=150, bg=COLOR)
-        fr.pack()
-        self.cv.create_window(320, 250, window=fr)
+        self.top_frame = Frame(self, width=640, height=480)
+        self.top_frame.grid(row=0, column=0)
 
-        param_btn = Parametersbutton(fr, bg='#D3D3D3', bd=8, relief=RAISED)
-        param_btn.pack(expand=YES, fill=BOTH)
+        self.bottom_frame = Frame(self, width=640, height=120)
+        self.bottom_frame.grid(row=1, column=0)
 
-        force_btn = Forcebutton(fr, bg='#D3D3D3', bd=8, relief=RAISED)
-        force_btn.pack(expand=YES, fill=BOTH, pady=5)
+        self.right_frame = Frame(self, width=160, height=600)
+        self.right_frame.grid(row=0, column=1, rowspan=2)
 
-        draw_btn = Drawbutton(fr, bg='#D3D3D3', bd=8, relief=RAISED)
-        draw_btn.pack(expand=YES, fill=BOTH)
+        self.construction = Canvas(self.top_frame, width=640, height=480, bg='white')
+        self.construction.pack(fill=BOTH)
 
+        self.draw_btn = Button(self.right_frame, text='О\n'
+                                                      'Т\n'
+                                                      'Р\n'
+                                                      'И\n'
+                                                      'С\n'
+                                                      'О\n'
+                                                      'В\n'
+                                                      'А\n'
+                                                      'Т\n'
+                                                      'Ь\n',
+                                font=('Verdana', 14, 'italic bold'),
+                                command=self.draw)
 
-class Parametersbutton(Button):
-    def __init__(self, parent=None, **kwargs):
-        Button.__init__(self, parent, kwargs)
-        self.pack()
+        self.draw_btn.pack(side=TOP, expand=YES, fill=BOTH)
 
-        self.config(text='Параметры', font=FONT)
-        self.bind('<Button-1>', lambda event: self.on_param_btn_click())
+        self.open_btn = Button(self.bottom_frame, text='Открыть файл', font=('Verdana', 10, 'italic bold'),
+                               command=self.open_file)
+        self.open_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
-    def on_param_btn_click(self):
-        win = Toplevel()
-        child = Parameterswin(win)
-        child.mainloop()
+        self.save_btn = Button(self.bottom_frame, text='Сохранить в файл', font=('Verdana', 10, 'italic bold'),
+                               command=self.save_file)
+        self.save_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
+        self.param_btn = Button(self.bottom_frame, text='Параметры конструкции', font=('Verdana', 10, 'italic bold'),
+                               command=self.read_parameters)
+        self.param_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
-class Parameterswin(AbstractWindow):
-    def __init__(self, parent=None):
-        AbstractWindow.__init__(self, parent)
-        self.pack()
-        self.master.title('Окно параметров')
-        self.make_widgets()
+        self.force_btn = Button(self.bottom_frame, text='Нагрузки', font=('Verdana', 10, 'italic bold'),
+                               command=self.read_forces)
+        self.force_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
-    def make_widgets(self):
-        mainframe = Frame(self, width=450, height=350)
-        mainframe.pack()
-        self.cv.create_window(320, 225, window=mainframe)
+        self.about_btn = Button(self.bottom_frame, text='О программе', font=('Verdana', 10, 'italic bold'),
+                               command=self.about_win)
+        self.about_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
-        btn_frame = Frame(self, width=350, height=80, bg='white')
-        btn_frame.pack()
-        self.cv.create_window(450, 440, window=btn_frame)
-
-        del_btn = Button(btn_frame, text='Удалить', font=FONT)
-        del_btn.pack(side=LEFT, expand=YES, fill=BOTH)
-
-        add_btn = Button(btn_frame, text='Добавить', font=FONT)
-        add_btn.pack(side=LEFT, expand=YES, fill=BOTH)
-
-        ready_btn = Button(btn_frame, text='Готово', font=FONT)
-        ready_btn.pack(expand=YES, fill=BOTH)
-
-
-class Forcebutton(Button):
-    def __init__(self, parent=None, **kwargs):
-        Button.__init__(self, parent, kwargs)
-        self.pack()
-
-        self.config(text='Нагрузки', font=FONT)
-        self.bind('<Button-1>', lambda event: self.on_force_btn_click())
-
-    def on_force_btn_click(self):
+    def draw(self):
         pass
 
+    def open_file(self):
+        pass
 
-class Drawbutton(Button):
-    def __init__(self, parent=None, **kwargs):
-        Button.__init__(self, parent, kwargs)
-        self.pack()
+    def save_file(self):
+        pass
 
-        self.config(text='Отрисовка конструкции', font=FONT)
-        self.bind('<Button-1>', lambda event: self.on_draw_btn_click())
+    def read_parameters(self):
+        pass
 
-    def on_draw_btn_click(self):
+    def read_forces(self):
+        pass
+
+    def about_win(self):
         pass

@@ -36,16 +36,21 @@ class MainWindow(AbstractWindow):
         fr.pack()
         self.cv.create_window(320, 250, window=fr)
 
-        prebtn = Preprocessorbutton(fr, bg='#D3D3D3', bd=8, relief=RAISED)
-        prebtn.pack(expand=YES, fill=BOTH)
+        self.prebtn = Button(fr, bg='#D3D3D3', text='Препроцессор',
+                             font=FONT, bd=8, relief=RAISED, command=self.make_preprocessorwin)
+        self.prebtn.pack(expand=YES, fill=BOTH)
 
-        prbtn = Processorbutton(fr, bg='#D3D3D3', bd=8, relief=RAISED)
-        prbtn.pack(expand=YES, fill=BOTH, pady=5)
+        self.prbtn = Button(fr, bg='#D3D3D3', text='Процессор', font=FONT, bd=8, relief=RAISED)
+        self.prbtn.pack(expand=YES, fill=BOTH, pady=5)
 
-        postprbtn = Postprocessorbutton(fr, bg='#D3D3D3', bd=8, relief=RAISED)
-        postprbtn.pack(expand=YES, fill=BOTH)
+        self.postprbtn = Button(fr, bg='#D3D3D3', text='Постпроцессор', font=FONT, bd=8, relief=RAISED)
+        self.postprbtn.pack(expand=YES, fill=BOTH)
 
         self.draw_picture()
+
+    def make_preprocessorwin(self):
+        self.forget()
+        PreprocessorWin().mainloop()
 
     def draw_picture(self):
         pass
