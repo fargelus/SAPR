@@ -46,11 +46,13 @@ class MainWindow(AbstractWindow):
         self.postprbtn = Button(fr, bg='#D3D3D3', text='Постпроцессор', font=FONT, bd=8, relief=RAISED)
         self.postprbtn.pack(expand=YES, fill=BOTH)
 
+        self.cv.create_text(590, 460, text='v1.0', fill='black', font=('Times', 8, 'italic bold'))
+
         self.draw_picture()
 
     def make_preprocessorwin(self):
-        self.forget()
-        PreprocessorWin().mainloop()
+        new_win = Toplevel(self)
+        PreprocessorWin(new_win).mainloop()
 
     def draw_picture(self):
         pass
