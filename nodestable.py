@@ -1,21 +1,30 @@
 __author__ = 'dima'
 
-from generaltable import *
+
+from generaltable import Tablebuttons, Table, Entrysnodes
+from tkinter import *
 
 
-class Nodestable(Table):
+class Nodestable(Frame):
     count = 0
 
     def __init__(self, parent=None):
-        Table.__init__(self, parent, 'Узлы', columns=('Заделка', 'F'),
-                       columns_names=('№ узла','Заделка', 'F'))
-        self.master.title('Параметры узлов')
-
-        self.btns.plus_btn.bind('<Button-1>', lambda event: self.add_new_node())
-        self.btns.minus_btn.bind('<Button-1>', lambda event: self.delete_node())
-        self.btns.save_btn.bind('<Button-1>', lambda event: self.save_all())
-
+        Frame.__init__(self, parent)
         self.pack()
+
+        self.tbl = Table(self, title='Узлы', columns=('F', 'Заделка'),
+                         columns_names=('№', 'F', 'Заделка'))
+
+        self.entr = Entrysnodes(self)
+        self.btns = Tablebuttons(self)
+
+        self.place_widgets()
+
+    def place_widgets(self):
+        self.tbl.pack()
+        self.btns.pack(anchor=SE)
+        self.entr.pack(anchor=W, pady=4)
+
 
     def add_new_node(self):
         pass
@@ -25,7 +34,6 @@ class Nodestable(Table):
 
     def save_all(self):
         pass
-
 
 
 if __name__ == '__main__':
