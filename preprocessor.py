@@ -4,15 +4,18 @@ from tkinter import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import showerror
 from drawconstruction import Drawbutton
+from rodstable import Rodstable
+from nodestable import Nodestable
+from savedata import save_data, get_data
 
 
 class PreprocessorWin(Frame):
     def __init__(self, parent=None):
         Frame.__init__(self, parent)
+        self.parent = parent
         self.pack(expand=YES, fill=BOTH)
 
         self.master.title('Окно препроцессора')
-
         self.make_widgets()
 
     def make_widgets(self):
@@ -37,31 +40,43 @@ class Innerframe(Frame):
                                     command=self.save_file)
         self.save_file_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
-        self.param_btn = Button(self, text='Параметры стержней', font=('Times', 10, 'italic bold'))
-                               # command=self.open_param_win)
-        self.param_btn.pack(side=LEFT, expand=YES, fill=BOTH)
+        self.rodes_btn = Button(self, text='Параметры стержней', font=('Times', 10, 'italic bold'),
+                               command=self.open_rods_win)
+        self.rodes_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
-        self.force_btn = Button(self, text='Параметры узлов', font=('Times', 10, 'italic bold'))
-                               # command=self.open_force_win)
-        self.force_btn.pack(side=LEFT, expand=YES, fill=BOTH)
+        self.nodes_btn = Button(self, text='Параметры узлов', font=('Times', 10, 'italic bold'),
+                                command=self.open_nodes_win)
+        self.nodes_btn.pack(side=LEFT, expand=YES, fill=BOTH)
 
         self.about_btn = Button(self, text='Справка', font=('Times', 10, 'italic bold'),
                                 command=self.about)
         self.about_btn.pack(side=LEFT, expand=YES, fill=BOTH)
+
+    def open_rods_win(self):
+        Rodstable(Toplevel(self)).mainloop()
+
+    def open_nodes_win(self):
+        Nodestable(Toplevel(self)).mainloop()
 
     def open_file(self):
         filename = askopenfilename(parent=self, defaultextension='.db', filetypes=[('Database', '.db'),
                                                                                    ('SQLite3', '.sqlite3'),
                                                                                    ('SQLite', '.sqlite')],
                                    initialdir='/home/dima/Рабочий стол/САПР/Computer Mechanic/data')
-        print(filename)
+
+        rods, nodes = get_data(filename)
+
+        Rodstable.fill_dict(rods)
+        Nodestable.set_dict(nodes)
 
     def save_file(self):
         filename = asksaveasfilename(parent=self, defaultextension='.db', filetypes=[('Database', '.db'),
                                                                                    ('SQLite3', '.sqlite3'),
                                                                                    ('SQLite', '.sqlite')],
                                    initialdir='/home/dima/Рабочий стол/САПР/Computer Mechanic/data')
-        print(filename)
+        rods = Rodstable.get_data_about_rods()
+        nodes = Nodestable.get_data_about_nodes()
+        save_data(filename, rods, nodes)
 
     def about(self):
         win = Toplevel(self)

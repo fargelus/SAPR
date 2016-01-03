@@ -1,7 +1,7 @@
 __author__ = 'dima'
 
 from tkinter import *
-from tkinter.ttk import Treeview
+from tkinter.ttk import Treeview, Scrollbar as Scroll
 
 
 GENERAL_FONT = ('Times', 12, 'italic bold')
@@ -89,7 +89,9 @@ class Entrysnodes(Frame):
         self.force_lbl = Label(self, text='F:')
         self.force_entrys = Entry(self, width=20)
 
-        self.obstacle_check = Checkbutton(self, text='Заделка')
+        self.var = IntVar()
+
+        self.obstacle_check = Checkbutton(self, text='Заделка', variable=self.var)
         self.ready_btn = Readybutton(self)
 
         self.place_widgets()
@@ -107,24 +109,26 @@ class Entrysnodes(Frame):
 
 
 class Table(Frame):
-    def __init__(self, parent, title, columns, columns_names):
+    def __init__(self, parent, title, columns):
         Frame.__init__(self, parent)
         self.pack(expand=YES, fill=BOTH)
 
         self.title_lbl = Label(self, text=title, font=GENERAL_FONT)
         self.table_tree = Treeview(self, columns=columns)
 
-        self.table_tree.heading('#0', text=columns_names[0])
+        # добавить Scrollbar
+        self.scroll = Scroll(self, orient=VERTICAL, command=self.table_tree.yview)
+        self.table_tree['yscroll'] = self.scroll.set
 
         for i in range(len(columns)):
-            self.table_tree.heading(columns[i], text=columns_names[i+1])
+            self.table_tree.heading(columns[i], text=columns[i])
 
         self.place_widgets()
 
     def place_widgets(self):
         self.title_lbl.pack(side=TOP, fill=X, expand=YES)
         self.table_tree.pack(side=LEFT, fill=BOTH, expand=YES)
-
+        self.scroll.pack(side=RIGHT, fill=Y, expand=YES)
 
 if __name__ == '__main__':
     Entrysnodes().mainloop()
