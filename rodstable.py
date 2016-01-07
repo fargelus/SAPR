@@ -6,16 +6,13 @@ from tkinter.simpledialog import askinteger
 from tkinter.messagebox import showerror, showwarning
 from savedata import save_rods
 from tkinter import *
+import nodestable
 
 
 class Rodstable(Frame):
     # статическая переменная счётчик
     count = 0
     dict_items = dict()
-
-    @staticmethod
-    def save_all(event):
-        save_rods(Rodstable.dict_items)
 
     @staticmethod
     def get_data_about_rods():
@@ -44,7 +41,7 @@ class Rodstable(Frame):
 
         self.btns.plus_btn.bind('<Button-1>', self.add_new_rode)
         self.btns.minus_btn.bind('<Button-1>', self.delete_rode)
-        self.btns.save_btn.bind('<Button-1>', Rodstable.save_all)
+        self.btns.save_btn.bind('<Button-1>', self.save_all)
 
         self.entr.ready_btn.bind('<Button-1>', self.fetch_res)
 
@@ -227,6 +224,17 @@ class Rodstable(Frame):
         for col in self.columns:
             self.tbl.table_tree.column(col, anchor=CENTER)
 
+    def save_all(self, event):
+        if nodestable.Nodestable.dict_items:
+            if len(nodestable.Nodestable.dict_items) - len(Rodstable.dict_items) != 1:
+                showerror('Ошибка', 'Кол-во узлов должно быть на единицу больше кол-ва стержней', parent=self)
+                self.tbl.table_tree.delete(*self.tbl.table_tree.get_children())
+                Rodstable.dict_items = dict()
+                Rodstable.count = 0
+            else:
+                save_rods(Rodstable.dict_items)
+        else:
+            save_rods(Rodstable.dict_items)
 
 if __name__ == '__main__':
     Rodstable().mainloop()

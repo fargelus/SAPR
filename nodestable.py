@@ -6,6 +6,7 @@ from tkinter import *
 from savedata import save_nodes
 from tkinter.messagebox import showerror, showwarning
 from tkinter.simpledialog import askinteger
+import rodstable
 
 
 class Nodestable(Frame):
@@ -15,10 +16,6 @@ class Nodestable(Frame):
     @staticmethod
     def get_data_about_nodes():
         return Nodestable.dict_items
-
-    @staticmethod
-    def save_all(event):
-        save_nodes(Nodestable.dict_items)
 
     @staticmethod
     def set_dict(data):
@@ -43,7 +40,7 @@ class Nodestable(Frame):
 
         self.btns.plus_btn.bind('<Button-1>', self.add_new_node)
         self.btns.minus_btn.bind('<Button-1>', self.delete_node)
-        self.btns.save_btn.bind('<Button-1>', Nodestable.save_all)
+        self.btns.save_btn.bind('<Button-1>', self.save_all)
         self.entr.ready_btn.bind('<Button-1>', self.fetch_res)
 
         self.place_widgets()
@@ -71,9 +68,6 @@ class Nodestable(Frame):
         if self.entr.force_entrys.get():
             try:
                 force = int(self.entr.force_entrys.get())
-                if force < 0:
-                    showwarning('Предупреждение', 'Сила должна не отрицательна', parent=self)
-                    self.entr.force_entrys.delete(0, END)
             except ValueError:
                 showerror('Ошибка', 'Значение должно быть целочисленным', parent=self)
                 self.entr.force_entrys.delete(0, END)
@@ -161,6 +155,18 @@ class Nodestable(Frame):
         self.fill_table()
 
         self.set_vals_on_center()
+
+    def save_all(self, event):
+        if rodstable.Rodstable.dict_items:
+            if len(Nodestable.dict_items) - len(rodstable.Rodstable.dict_items) != 1:
+                showerror('Ошибка', 'Кол-во узлов должно быть на единицу больше кол-ва стержней', parent=self)
+                self.tbl.table_tree.delete(*self.tbl.table_tree.get_children())
+                Nodestable.dict_items = dict()
+                Nodestable.count = 0
+            else:
+                save_nodes(Nodestable.dict_items)
+        else:
+            save_nodes(Nodestable.dict_items)
 
 if __name__ == '__main__':
     Nodestable().mainloop()
