@@ -3,9 +3,9 @@ __author__ = 'dima'
 from tkinter import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
 from tkinter.messagebox import showerror
-from drawconstruction import Drawbutton
 from rodstable import Rodstable
 from nodestable import Nodestable
+from construction import Construction
 from savedata import save_data, get_data
 
 
@@ -19,9 +19,93 @@ class PreprocessorWin(Frame):
         self.make_widgets()
 
     def make_widgets(self):
-        Innerframe(self).pack(side=BOTTOM)
-        Construction(self).pack(side=LEFT)
-        Drawbutton(self).pack(side=RIGHT)
+        inner = Innerframe(self)
+        inner.pack(side=BOTTOM)
+        con = Construction(self)
+        con.pack(side=TOP)
+        PreprocessMenu(self.parent, inner, con)
+
+
+class PreprocessMenu:
+    def __init__(self, parent, inner_fr, con):
+        self.menu_bar = Menu()
+        self.parent = parent
+        self.parent.config(menu=self.menu_bar)
+
+        self.bottom_btns = inner_fr
+        self.construction = con
+
+        self.file_menu = Menu(self.menu_bar)
+        self.menu_bar.add_cascade(label='Файл', menu=self.file_menu)
+
+        self.file_menu.add_command(label='Открыть', command=lambda self=self: self.bottom_btns.open_file())
+        self.file_menu.add_command(label='Сохранить', command=lambda self=self: self.bottom_btns.save_file())
+        self.file_menu.add_command(label='Назад к главному меню', command=lambda self=self: self.parent.destroy())
+        self.file_menu.add_command(label='Выход', command=lambda self=self: self.parent.master.master.destroy())
+
+        self.parameters = Menu(self.menu_bar)
+        self.menu_bar.add_cascade(label='Параметры', menu=self.parameters)
+
+        self.rods_param = Menu(self.parameters)
+        self.parameters.add_cascade(label='Стержни', menu=self.rods_param)
+
+        self.nodes_param = Menu(self.parameters)
+        self.parameters.add_cascade(label='Узлы', menu=self.nodes_param)
+
+        self.rods_param.add_command(label='Отобразить лок. с-му координат', command=self.axes)
+
+        self.rods_param.add_command(label='Пронумеровать стержни', command=self.rod_number)
+
+        self.rods_param.add_command(label='Показать нагрузки', command=self.q_force)
+
+        self.nodes_param.add_command(label='Пронумеровать узлы', command=self.node_number)
+
+        self.nodes_param.add_command(label='Показать значение силы', command=self.force)
+
+        self.parameters.add_command(label='Показать доп. параметры', command=self.show_other_param)
+        self.parameters.add_command(label='Очистить всё', command=lambda self=self: self.construction.clear_all())
+
+        self.help_menu = Menu(self.menu_bar)
+        self.menu_bar.add_cascade(label='Помощь', menu=self.help_menu)
+
+        self.help_menu.add_command(label='Справка', command=lambda self=self: self.bottom_btns.about())
+
+    def show_other_param(self):
+        if not self.construction.cv.gettags('other'):
+            self.construction.draw_l_line()
+            self.construction.draw_ea_line()
+        else:
+            self.construction.cv.delete('other')
+
+    def axes(self):
+        if not self.construction.cv.gettags('axes'):
+            self.construction.draw_axes_system()
+        else:
+            self.construction.cv.delete('axes')
+
+    def rod_number(self):
+        if not self.construction.cv.gettags('rod_numb'):
+            self.construction.draw_number_rod()
+        else:
+            self.construction.cv.delete('rod_numb')
+
+    def q_force(self):
+        if not self.construction.cv.gettags('q'):
+            self.construction.draw_q_force()
+        else:
+            self.construction.cv.delete('q')
+
+    def node_number(self):
+        if not self.construction.cv.gettags('node_numb'):
+            self.construction.draw_number_node()
+        else:
+            self.construction.cv.delete('node_numb')
+
+    def force(self):
+        if not self.construction.cv.gettags('force'):
+            self.construction.draw_force()
+        else:
+            self.construction.cv.delete('force')
 
 
 class Innerframe(Frame):
@@ -81,17 +165,6 @@ class Innerframe(Frame):
     def about(self):
         win = Toplevel(self)
         Aboutwin(win).mainloop()
-
-
-class Construction(Frame):
-    def __init__(self, parent=None):
-        Frame.__init__(self, parent)
-        self.pack()
-
-        self.cv = Canvas(self, width=640, height=480, bg='white')
-        self.cv.pack(expand=YES, fill=BOTH)
-
-        self.cv.create_text(300, 25, text='Конструкция', fill='gray', font=('Times', 15, 'italic bold'))
 
 
 class Aboutwin(Frame):

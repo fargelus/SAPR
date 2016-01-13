@@ -225,16 +225,11 @@ class Rodstable(Frame):
             self.tbl.table_tree.column(col, anchor=CENTER)
 
     def save_all(self, event):
-        if nodestable.Nodestable.dict_items:
-            if len(nodestable.Nodestable.dict_items) - len(Rodstable.dict_items) != 1:
-                showerror('Ошибка', 'Кол-во узлов должно быть на единицу больше кол-ва стержней', parent=self)
-                self.tbl.table_tree.delete(*self.tbl.table_tree.get_children())
-                Rodstable.dict_items = dict()
-                Rodstable.count = 0
-            else:
-                save_rods(Rodstable.dict_items)
-        else:
-            save_rods(Rodstable.dict_items)
+        for i in range(1, len(Rodstable.dict_items) + 2):
+            nodestable.Nodestable.dict_items[i] = (0, 0)
+        nodestable.Nodestable.count = len(Rodstable.dict_items) + 1
+        save_rods(Rodstable.dict_items)
+
 
 if __name__ == '__main__':
     Rodstable().mainloop()

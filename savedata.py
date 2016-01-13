@@ -53,8 +53,13 @@ def save_data(filename, data_rodes, data_nodes):
 def get_data(filename):
     con = lite.connect(filename)
     cur = con.cursor()
+    data_rodes = ()
+    data_nodes = ()
     with con:
-        data_rodes = tuple(cur.execute('SELECT * FROM Rods'))
-        data_nodes = tuple(cur.execute('SELECT * FROM Nodes'))
+        try:
+            data_rodes = tuple(cur.execute('SELECT * FROM Rods'))
+            data_nodes = tuple(cur.execute('SELECT * FROM Nodes'))
+        except lite.OperationalError:
+            pass
 
     return data_rodes, data_nodes

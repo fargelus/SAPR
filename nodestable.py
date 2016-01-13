@@ -160,9 +160,9 @@ class Nodestable(Frame):
         if rodstable.Rodstable.dict_items:
             if len(Nodestable.dict_items) - len(rodstable.Rodstable.dict_items) != 1:
                 showerror('Ошибка', 'Кол-во узлов должно быть на единицу больше кол-ва стержней', parent=self)
-                self.tbl.table_tree.delete(*self.tbl.table_tree.get_children())
-                Nodestable.dict_items = dict()
-                Nodestable.count = 0
+                self.tbl.table_tree.delete(Nodestable.count)
+                Nodestable.dict_items.pop(Nodestable.count)
+                Nodestable.count -= 1
             else:
                 save_nodes(Nodestable.dict_items)
         else:
