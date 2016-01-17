@@ -59,7 +59,10 @@ class MainWindow(AbstractWindow):
     def make_active(self, win, type):
         win.destroy()
         if type == 1:
-            self.prbtn['state'] = 'normal'
+            if not Nodestable.dict_items or not Rodstable.dict_items:
+                pass
+            else:
+                self.prbtn['state'] = 'normal'
         else:
             self.postprbtn['state'] = 'normal'
 

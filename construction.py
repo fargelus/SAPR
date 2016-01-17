@@ -15,6 +15,12 @@ class Construction(Frame):
         self.pack()
 
         self.cv = Canvas(self, width=640, height=480, bg='white')
+        self.cv.config(scrollregion=(0, 0, 3000, 480))
+
+        self.sbar = Scrollbar(self, orient=HORIZONTAL)
+        self.sbar.config(command=self.cv.xview)
+        self.cv.config(xscrollcommand=self.sbar.set)
+
         self.cv.create_text(300, 25, text='Конструкция', fill='gray', font=('Times', 15, 'italic bold'), tag='title')
 
         self.nodes_coord = []
@@ -39,8 +45,10 @@ class Construction(Frame):
         self.place_widgets()
 
     def place_widgets(self):
+        self.sbar.pack(side=BOTTOM, fill=X, expand=YES)
         self.cv.pack(side=LEFT, fill=BOTH, expand=YES)
         self.draw_btn.pack(side=RIGHT, fill=BOTH, expand=YES)
+        # self.sbar.pack(side=BOTTOM, fill=X)
 
     def draw(self, event):
         if self.cv.find_all():
