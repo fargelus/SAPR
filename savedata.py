@@ -63,3 +63,28 @@ def get_data(filename):
             pass
 
     return data_rodes, data_nodes
+
+
+def save_res(Nx, Ux, sigma):
+    initial_dir = getcwd()
+    con = lite.connect(initial_dir + '/data/res.db')
+    cur = con.cursor()
+    with con:
+        cur.execute('DROP TABLE IF EXISTS Rods')
+        cur.execute('DROP TABLE IF EXISTS Nx')
+        cur.execute('CREATE TABLE Nx(№ INTEGER, Val FLOAT);')
+
+        cur.execute('DROP TABLE IF EXISTS Ux')
+        cur.execute('CREATE TABLE Ux(№ INTEGER, Val FLOAT);')
+
+        cur.execute('DROP TABLE IF EXISTS sigma')
+        cur.execute('CREATE TABLE sigma(№ INTEGER, Val FLOAT);')
+
+        for index, val in enumerate(Nx):
+            cur.execute('INSERT INTO Nx(№, Val) VALUES (%s, %.2f)' % (index + 1, val))
+
+        for index, val in enumerate(Ux):
+            cur.execute('INSERT INTO Ux(№, Val) VALUES (%s, %.2f)' % (index + 1, val))
+
+        for index, val in enumerate(sigma):
+            cur.execute('INSERT INTO sigma(№, Val) VALUES (%s, %.2f)' % (index + 1, val))

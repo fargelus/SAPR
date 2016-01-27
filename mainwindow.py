@@ -1,6 +1,6 @@
 __author__ = 'dima'
 
-""" пробуем запрогать GUI по проекту Чеканина """
+""" пробуем запрогать GUI по САПРу """
 
 from tkinter import *
 from preprocessor import *
