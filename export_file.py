@@ -1,75 +1,70 @@
 __author__ = 'dima'
 
 import sqlite3 as lite
-from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4, inch, landscape
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
 
 
-def read_result():
+def read_result(parameter):
     con = lite.connect('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/res.db')
     with con:
         cur = con.cursor()
         Nx = tuple(cur.execute('SELECT * FROM Nx'))
         Ux = tuple(cur.execute('SELECT * FROM Ux'))
         sigma = tuple(cur.execute('SELECT * FROM sigma'))
-    return Nx, Ux, sigma
+    if str(parameter) == 'Nx':
+        return Nx
+    elif str(parameter) == 'Ux':
+        return Ux
+    elif str(parameter) == 'sigma':
+        return sigma
+    return
 
 
 def write_result():
-    Nx, Ux, sigma = read_result()
-    doc = SimpleDocTemplate("/home/dima/Рабочий стол/САПР/Computer Mechanic/data/res.pdf",
-                            pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=18)
+    make_pdf('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/res_pdf/resNx.pdf', 'Nx')
+    make_pdf('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/res_pdf/resUx.pdf', 'Ux')
+    make_pdf('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/res_pdf/res_sigma.pdf', 'sigma')
+
+
+def make_pdf(filename, parameter):
+    parameter = read_result(parameter)
+    doc = SimpleDocTemplate(filename, pagesize=A4, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=18)
     doc.pagesize = landscape(A4)
     elements = []
-    Nx = get_writable_list(Nx)
-    data = [['№', 'Значение'], Nx]
-    print(data)
+    data = [['Number', 'Value']]
+    write_data(parameter, data)
 
-#     filename = open('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/toPdf.txt', 'w')
-#     filename.write('\tNx\n\n')
-#     write_table(filename, Nx)
-#
-#     filename.write('\n\n\n\tUx\n\n')
-#     write_table(filename, Ux)
-#
-#     filename.write('\n\n\n\tSigma\n\n')
-#     write_table(filename, sigma)
-#
-#     filename.close()
-#
-#     print(filename.name)
-#     make_pdf(filename.name)
-#
-#
+    style = TableStyle([('ALIGN',(1,1),(-2,-2),'RIGHT'),
+                       ('TEXTCOLOR',(1,1),(-2,-2),colors.red),
+                       ('VALIGN',(0,0),(0,-1),'TOP'),
+                       ('TEXTCOLOR',(0,0),(0,-1),colors.blue),
+                       ('ALIGN',(0,-1),(-1,-1),'CENTER'),
+                       ('VALIGN',(0,-1),(-1,-1),'MIDDLE'),
+                       ('TEXTCOLOR',(0,-1),(-1,-1),colors.green),
+                       ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+                       ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+                       ])
+
+    s = getSampleStyleSheet()
+    s = s["BodyText"]
+    s.wordWrap = 'CJK'
+    data2 = [[Paragraph(cell, s) for cell in row] for row in data]
+    t = Table(data2)
+    t.setStyle(style)
+
+    elements.append(t)
+    doc.build(elements)
 
 
-def get_writable_list(parameter):
-    number_vals = [val[0] for val in parameter]
-    vals = [val[1] for val in parameter]
+def write_data(parameter, data):
+    number_vals = [str(val[0]) for val in parameter]
+    vals = [str(val[1]) for val in parameter]
 
-    complex_list = []
     for item in zip(number_vals, vals):
-        complex_list.append(list(item))
-
-    print(complex_list)
-    return complex_list
-
-
-#
-# def make_pdf(filename):
-#     pdf_file = '/home/dima/Рабочий стол/САПР/Computer Mechanic/data/res.pdf'
-#     c = canvas.Canvas(pdf_file)
-#
-#     with open(filename) as file_to_write:
-#         lines = file_to_write.readlines()
-#         print(lines)
-#
-#     for line in lines:
-#         c.drawString(100, 10, line)
-#     c.save()
+        data.append(list(item))
 
 
 if __name__ == '__main__':
