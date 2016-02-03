@@ -3,11 +3,14 @@ __author__ = 'dima'
 from tkinter import *
 from tkinter.ttk import Progressbar
 from savedata import get_data, save_res
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, showerror
 import numpy
 
 
 class MyProgressBar(Frame):
+
+    cancel_btn = False
+
     def __init__(self, parent=None):
         Frame.__init__(self, parent)
 
@@ -27,7 +30,7 @@ class MyProgressBar(Frame):
         self.ok_btn = Button(self.btn_frame, text='Ok', command=self.master.destroy, width=20)
         self.ok_btn['state'] = DISABLED
 
-        self.cancel_btn = Button(self.btn_frame, text='Отмена', command=self.master.destroy, width=20)
+        self.cancel_btn = Button(self.btn_frame, text='Отмена', command=self.cancel_btn_click, width=20)
 
         self.cancel_btn.pack(side=LEFT, expand=YES, fill=BOTH)
         self.ok_btn.pack(side=RIGHT, expand=YES, fill=BOTH)
@@ -41,15 +44,23 @@ class MyProgressBar(Frame):
             self.master.update()
             self.var.set(x)
             x += 5
-        showinfo('Инфо', 'Расчёт окончен', parent=self)
+        try:
+            showinfo('Инфо', 'Расчёт окончен', parent=self)
+        except TclError:
+            return
         self.ok_btn['state'] = NORMAL
+
+    def cancel_btn_click(self):
+        MyProgressBar.cancel_btn = True
+        self.master.destroy()
 
 
 class ProcessorWin(Frame):
 
     _ = float('inf')
 
-    def __init__(self, parent=None):
+    def __init__(self, parent=None,
+                 filename='/home/dima/Рабочий стол/САПР/Computer Mechanic/data/test.db'):
         Frame.__init__(self, parent)
         self.master.title('Процессор')
         self.pack()
@@ -65,7 +76,8 @@ class ProcessorWin(Frame):
         self.show_matrix_btn.bind('<Button-1>', self.show_matrix)
 
         self.place_widgets()
-        self.rods, self.nodes = get_data('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/test.db')
+
+        self.rods, self.nodes = get_data(filename)
 
         self.size = len(self.nodes)
         self.A = [[0] * self.size for i in range(self.size)]
@@ -83,10 +95,10 @@ class ProcessorWin(Frame):
 
     def calculate(self, event):
         # MyProgressBar(Toplevel(self))
+        if not MyProgressBar.cancel_btn:
+            self.solution()
 
-        self.solution()
-
-        self.show_matrix_btn['state'] = NORMAL
+            self.show_matrix_btn['state'] = NORMAL
 
     def solution(self):
         self.create_matrix()
@@ -109,13 +121,13 @@ class ProcessorWin(Frame):
 
         if numpy.linalg.det(self.A) != 0:
             reverse_matrix = numpy.linalg.inv(self.A)
-            self.Ux = list(numpy.linalg.solve(reverse_matrix, self.b))
+            self.Ux = list(numpy.dot(reverse_matrix, self.b))
 
         self.calculate_Nx()
         self.calculate_sigmax()
 
-        print(self.N)
         print(self.Ux)
+        print(self.N)
         print(self.sigma)
 
         self.save()
@@ -159,18 +171,17 @@ class ProcessorWin(Frame):
     def create_vector_b(self):
         # формирование глобального вектора реакций b
         l_list = [val[1] for val in self.rods]
-        for index, val in enumerate(self.rods):
-            sum_q = 0
-            for i in range(index, -1, -1):
-                q = val[-1]
-                l = l_list[index]
-                sum_q += -q * l / 2
-            item = sum_q + self.nodes[index][1]
-            self.b.append(item)
-            if index == len(self.rods) - 1:
-                self.b.append(sum_q + self.nodes[index + 1][1])
+        q_list = [val[-1] for val in self.rods]
+        f_list = [val[1] for val in self.nodes]
 
-    def calculate_Nx(self):
+        for index, val in enumerate(self.nodes):
+            if index < len(self.rods):
+                one_item = q_list[index] * l_list[index] / 2 + f_list[index]
+            else:
+                one_item = q_list[index - 1] * l_list[index - 1] / 2 + f_list[index]
+            self.b.append(one_item)
+
+    def calculate_Nx(self, x=0):
         # расчёт продольной силы Nx в стержнях
 
         _ = ProcessorWin._
@@ -183,7 +194,7 @@ class ProcessorWin(Frame):
         for i in range(len(self.N)):
             if q_list[i] != 0:
                 self.N[i] = ((e_list[i] * a_list[i]) / l_list[i]) * (self.Ux[i + 1] - self.Ux[i]) \
-	                   + (q_list[i] * l_list[i]) / 2 * (1 - 2 * (_ / l_list[i]))
+                            + (q_list[i] * l_list[i]) / 2 * (1 - 2 * (x / l_list[i]))
             else:
                 self.N[i] = ((e_list[i] * a_list[i]) / l_list[i]) * (self.Ux[i + 1] - self.Ux[i])
 
@@ -203,7 +214,7 @@ class ProcessorWin(Frame):
         self.draw_simple(canv)
 
         # левая -
-        canv.create_line(30, 70, 20, 70)
+        canv.create_line(30, 70, 20, 70, width=2)
 
         start_x = 40
         start_y = 80
@@ -217,18 +228,18 @@ class ProcessorWin(Frame):
             start_x = 40
 
         # левая |
-        canv.create_line(20, 70, 20, start_y)
+        canv.create_line(20, 70, 20, start_y, width=2)
         # левая -
-        canv.create_line(20, start_y, 30, start_y)
+        canv.create_line(20, start_y, 30, start_y, width=2)
 
         shift_x = start_x * self.size + 10
 
         # правая -
-        canv.create_line(shift_x, 70, shift_x + 10, 70)
+        canv.create_line(shift_x, 70, shift_x + 10, 70, width=2)
         # правая |
-        canv.create_line(shift_x + 10, 70, shift_x + 10, start_y)
+        canv.create_line(shift_x + 10, 70, shift_x + 10, start_y, width=2)
         # правая -
-        canv.create_line(shift_x + 10, start_y, shift_x, start_y)
+        canv.create_line(shift_x + 10, start_y, shift_x, start_y, width=2)
 
         shift_x += 30
 
@@ -245,13 +256,15 @@ class ProcessorWin(Frame):
             start_y += 20
 
         # левая { для Ux
-        canv.create_text(start_x - 30, 100, text='{', font=('Courier', start_y - 80, 'normal'))
+        canv.create_text(start_x - 30, 80 + (start_y - 80) / 3, text='{',
+                         font=('Courier', start_y - 80, 'normal'))
         # правая } для Ux
-        canv.create_text(start_x + 30, 100, text='}', font=('Courier', start_y - 80, 'normal'))
+        canv.create_text(start_x + 30, 80 + (start_y - 80) / 3, text='}',
+                         font=('Courier', start_y - 80, 'normal'))
 
         # для =
-        canv.create_line(start_x + 70, start_y - 40, start_x + 85, start_y - 40)
-        canv.create_line(start_x + 70, start_y - 35, start_x + 85, start_y - 35)
+        canv.create_line(start_x + 70, shift_y, start_x + 85, shift_y)
+        canv.create_line(start_x + 70, shift_y + 10, start_x + 85, shift_y + 10)
 
         # для вектора b
         start_x += 150
@@ -261,9 +274,11 @@ class ProcessorWin(Frame):
             start_y += 20
 
         # левая { для вектора b
-        canv.create_text(start_x - 30, 100, text='{', font=('Courier', start_y - 80, 'normal'))
+        canv.create_text(start_x - 30, 80 + (start_y - 80) / 3, text='{',
+                         font=('Courier', start_y - 80, 'normal'))
         # правая } для вектора b
-        canv.create_text(start_x + 30, 100, text='}', font=('Courier', start_y - 80, 'normal'))
+        canv.create_text(start_x + 30, 80 + (start_y - 80) / 3, text='}',
+                         font=('Courier', start_y - 80, 'normal'))
 
     def draw_simple(self, canv):
         canv.create_line(30, 20, 20, 20)

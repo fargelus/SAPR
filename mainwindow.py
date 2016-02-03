@@ -67,9 +67,14 @@ class MainWindow(AbstractWindow):
             self.postprbtn['state'] = 'normal'
 
     def make_processorwin(self):
+        filename = open('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/filepath.txt').readline()
+        print(filename)
+        if not filename:
+            showerror('Ошибка', 'Не могу найти данные для расчёта', parent=self)
+            return
         win = Toplevel(self)
         win.protocol('WM_DELETE_WINDOW', lambda win=win, self=self: self.make_active(win, 2))
-        ProcessorWin(win).mainloop()
+        ProcessorWin(win, filename).mainloop()
 
     def make_postprocessorwin(self):
         PostprocessorWin(Toplevel(self)).mainloop()

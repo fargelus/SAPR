@@ -109,6 +109,9 @@ class PreprocessMenu:
 
 
 class Innerframe(Frame):
+
+    flag = False
+
     def __init__(self, parent=None):
         Frame.__init__(self, parent, width=640, height=120)
         self.pack(expand=YES, fill=BOTH)
@@ -148,16 +151,24 @@ class Innerframe(Frame):
                                                                                    ('SQLite', '.sqlite')],
                                    initialdir='/home/dima/Рабочий стол/САПР/Computer Mechanic/data')
 
+        save_filename = open('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/filepath.txt', 'w')
+        save_filename.write(filename)
+
         rods, nodes = get_data(filename)
 
         Rodstable.fill_dict(rods)
         Nodestable.set_dict(nodes)
 
     def save_file(self):
+        flag = True
         filename = asksaveasfilename(parent=self, defaultextension='.db', filetypes=[('Database', '.db'),
                                                                                    ('SQLite3', '.sqlite3'),
                                                                                    ('SQLite', '.sqlite')],
                                    initialdir='/home/dima/Рабочий стол/САПР/Computer Mechanic/data')
+
+        save_filename = open('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/filepath.txt', 'w')
+        save_filename.write(filename)
+
         rods = Rodstable.get_data_about_rods()
         nodes = Nodestable.get_data_about_nodes()
         save_data(filename, rods, nodes)
@@ -258,4 +269,8 @@ class Aboutwin(Frame):
             self.text_widget.insert(END, item)
 
 
-
+if __name__ == '__main__':
+    PreprocessorWin(Tk()).mainloop()
+else:
+    if not Innerframe.flag:
+        open('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/filepath', 'w')

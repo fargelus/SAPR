@@ -16,14 +16,11 @@ class PostprocessorWin(Frame):
 
         self.sigmax_btn = Button(self.inner_fr, text='График σ', font=('Times', 10, 'italic bold'), bd=5, relief=FLAT)
 
-        self.tbl_btn = Button(self.inner_fr, text='Показать таблицу', font=('Times', 10, 'italic bold'),
+        self.tbl_btn = Button(self.inner_fr, text='Показать таблицы', font=('Times', 10, 'italic bold'),
                               bd=5, relief=FLAT)
 
         self.report_btn = Button(self.inner_fr, text='Показать файл рез-та расчёта', font=('Times', 10, 'italic bold'),
                                  bd=5, relief=FLAT)
-
-        self.diagram_btn = Button(self.inner_fr, text='Отобразить эпюры', font=('Times', 10, 'italic bold'),
-                                  bd=5, relief=FLAT)
 
         self.place_widgets()
 
@@ -35,7 +32,6 @@ class PostprocessorWin(Frame):
         self.sigmax_btn.pack(side=TOP, fill=X, expand=YES)
         self.tbl_btn.pack(side=TOP, fill=X, expand=YES)
         self.report_btn.pack(side=TOP, fill=X, expand=YES)
-        self.diagram_btn.pack(side=TOP, fill=X, expand=YES)
 
 
 if __name__ == '__main__':
