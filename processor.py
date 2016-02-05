@@ -17,9 +17,6 @@ class MyProgressBar(Frame):
         self.master.title('Пожалуйста подождите')
         self.pack(fill=BOTH, expand=YES)
 
-        # self.fr = Frame(self, width=200, height=100)
-        # self.fr.pack(side=TOP, expand=YES, fill=BOTH)
-
         self.var = IntVar()
         self.pbar = Progressbar(self, orient='horizontal', mode='determinate', variable=self.var)
         self.pbar['maximum'] = 50

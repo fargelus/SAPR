@@ -1,6 +1,10 @@
 __author__ = 'dima'
 
 from tkinter import *
+from graphics import *
+from mytable import *
+from export_file import *
+from tkinter.messagebox import showinfo
 
 
 class PostprocessorWin(Frame):
@@ -22,6 +26,13 @@ class PostprocessorWin(Frame):
         self.report_btn = Button(self.inner_fr, text='Показать файл рез-та расчёта', font=('Times', 10, 'italic bold'),
                                  bd=5, relief=FLAT)
 
+        # events
+        self.nx_btn.bind('<Button-1>', lambda event: NxGraphic(Toplevel()).mainloop())
+        self.ux_btn.bind('<Button-1>', lambda event: UxGraphic(Toplevel()).mainloop())
+        self.sigmax_btn.bind('<Button-1>', lambda event: SigmaGraphic(Toplevel()).mainloop())
+        self.tbl_btn.bind('<Button-1>', self.show_table)
+        self.report_btn.bind('<Button-1>', self.report)
+
         self.place_widgets()
 
     def place_widgets(self):
@@ -32,6 +43,18 @@ class PostprocessorWin(Frame):
         self.sigmax_btn.pack(side=TOP, fill=X, expand=YES)
         self.tbl_btn.pack(side=TOP, fill=X, expand=YES)
         self.report_btn.pack(side=TOP, fill=X, expand=YES)
+
+    def report(self, event):
+        write_result()
+        showinfo('Инфо', 'Отчёты сформированы', parent=self)
+
+    def show_table(self, event):
+        app = QApplication(sys.argv)
+
+        table = MyTable()
+        table.show()
+
+        app.exec_()
 
 
 if __name__ == '__main__':
