@@ -33,7 +33,7 @@ class MyTable(QWidget):
         # лейблы
         self.lbl_Nx = QLabel('Nx')
         self.lbl_Ux = QLabel('Ux')
-        self.lbl_sigma = QLabel('δ')
+        self.lbl_sigma = QLabel('σ')
 
         # основные layouts
         self.vbox_Nx = QVBoxLayout()

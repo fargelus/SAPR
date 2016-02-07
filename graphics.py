@@ -5,6 +5,7 @@ __author__ = 'dima'
 from tkinter import *
 import sqlite3 as lite
 from savedata import get_data
+import matplotlib.pyplot as plt
 
 
 class General(Frame):
@@ -89,73 +90,64 @@ class NxGraphic(General):
         self.draw_graphic(self.data, self.rods)
 
 
-class UxGraphic(General):
-    def __init__(self, parent=None):
-        General.__init__(self, parent)
-        self.pack()
-
-        self.master.title('График Ux')
-
+class UxGraphic:
+    def __init__(self):
         con = lite.connect('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/res.db')
         with con:
             cur = con.cursor()
             self.data = tuple(cur.execute('SELECT * FROM Ux'))
 
         filename = open('/home/dima/Рабочий стол/САПР/Computer Mechanic/data/filepath.txt').readline().strip()
-        self.rods = get_data(filename)[0]
-
+        self.nodes = get_data(filename)[1]
         self.draw()
 
     def draw(self):
-        self.draw_axes(self.rods)
-        vals = [val[-1] for val in self.data]
-        print(vals)
-        start_x = 60
-        start_y = 240
-        zero_y = 240
-        index = 0
-        coeff = 3
-        print(self.shifts)
+        i = 0.9
+        X = []
         while True:
-            try:
-                end_x = self.shifts[index]
-                if vals[index + 1] > 0:
-                    self.cv.create_line(start_x, start_y, end_x, start_y - coeff * vals[index + 1])
-                    start_y -= coeff * vals[index + 1]
-                elif vals[index + 1] == 0:
-                    print(start_y)
-                    self.cv.create_line(start_x, start_y, end_x, zero_y)
-                    start_y = zero_y
-                else:
-                    self.cv.create_line(start_x, start_y, end_x, start_y + coeff * vals[index + 1])
-                    start_y += coeff * vals[index + 1]
-            except IndexError:
+            i += 0.1
+            X.append(float('%.2f' % i))
+            if i >= self.nodes[-1][0]:
                 break
-            index += 1
-            start_x = end_x
 
-    def draw_points(self, start_x, start_y, end_x, end_y):
-        minus = False
-        if start_y > end_y:
-            diff_y = start_y - end_y
-            minus = True
-        else:
-            diff_y = end_y - start_y
-        diff_x = end_x - start_x
-        ratio = diff_x // diff_y
-        prev_x = start_x
-        print(ratio)
+        vals = [val[1] for val in self.data]
+        j = 0
+        Y = []
         while True:
-            if minus:
-                if start_x >= end_x or start_y <= end_y:
-                    break
-                start_x = prev_x + 3 * ratio
-                self.cv.create_line(prev_x, start_y, start_x, start_y)
-                start_y -= 3
+            if j == len(vals):
+                break
+            if j >= 1:
+                if vals[j] > vals[j - 1] or vals[j] < vals[j - 1]:
+                    if vals[j] > vals[j - 1]:
+                        diff = vals[j] - vals[j-1]
+                        add = diff / 10
+                        temp_val = vals[j - 1]
+                        while temp_val < vals[j]:
+                            Y.append(float('%.2f' % temp_val))
+                            temp_val += add
+                    else:
+                        diff = vals[j - 1] - vals[j]
+                        ded = diff / 10
+                        temp_val = vals[j - 1]
+                        while temp_val > vals[j]:
+                            Y.append(float('%.2f' % temp_val))
+                            temp_val -= ded
+            j += 1
 
+        del Y[len(Y) // 2]
+        print(X)
+        print()
+        print(Y)
+        print(len(X))
+        print(len(Y))
 
-
-
+        plt.plot(X, Y)
+        plt.axis([1, X[-1], 0, max(Y)])
+        plt.title('График Ux')
+        plt.xlabel('Номер узла')
+        plt.ylabel('Перемещение')
+        plt.grid()
+        plt.show()
 
 
 class SigmaGraphic(General):
@@ -178,5 +170,6 @@ class SigmaGraphic(General):
     def draw(self):
         self.draw_graphic(self.data, self.rods)
 
+
 if __name__ == '__main__':
-    UxGraphic(Tk()).mainloop()
+    UxGraphic()

@@ -91,7 +91,7 @@ class ProcessorWin(Frame):
         self.btns_frame.pack(side=BOTTOM, anchor=SE)
 
     def calculate(self, event):
-        # MyProgressBar(Toplevel(self))
+        MyProgressBar(Toplevel(self))
         if not MyProgressBar.cancel_btn:
             self.solution()
 
