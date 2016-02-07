@@ -17,7 +17,7 @@
                   sudo apt-get install python3-numpy python3-pyQt4 python3-matplotlib
             
             - Для операционных систем семейств Windows:
-                  1). Если у вас не установлен pip, загрузите [get-pip.py](https://bootstrap.pypa.io/get-pip.py)
+                  1). Если у вас не установлен pip, загрузите get-pip.py с сайта https://bootstrap.pypa.io/get-pip.py
                       (обязательно сохранив с расширением .py)
                   2). Запустить этот файл (могут потребоваться права администратора).
                         python3 get-pip.py
