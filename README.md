@@ -12,7 +12,7 @@
       - python3-matplotlib
 
 # Сборка:
-      ## 1. установка внешних зависимостей:
+## 1. установка внешних зависимостей:
             - Для unix-like операционных систем:
                   sudo apt-get install python3-numpy python3-pyQt4 python3-matplotlib
             
@@ -26,12 +26,11 @@
                               pip3 install matplotlib
                               pip3 install pyQt4
                               
-      ## 2. Получение исходного кода
+## 2. Получение исходного кода
             В командной строке наберите git clone https://github.com/fargelus/SAPR.git
       
-      ## 3. Перейдите в папку проекта
+## 3. Перейдите в папку проекта
             cd /здесь должен быть путь к директории проекта
       
-      ## 4. Выполнение
+## 4. Выполнение
             Введите в командной строке или в терминале: python3 mainwindow.py
-
